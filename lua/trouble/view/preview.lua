@@ -43,33 +43,32 @@ function M.create(item, opts)
   end
 
   -- create a scratch preview buffer when needed
-  if not (buf and vim.api.nvim_buf_is_loaded(buf)) then
-    if opts.scratch then
-      buf = vim.api.nvim_create_buf(false, true)
-      vim.bo[buf].bufhidden = "wipe"
-      vim.bo[buf].buftype = "nofile"
-      local lines = Util.get_lines({ path = item.filename, buf = item.buf })
-      if not lines then
-        return
+  if opts.scratch then
+    buf = vim.api.nvim_create_buf(false, true)
+    vim.bo[buf].bufhidden = "wipe"
+    vim.bo[buf].buftype = "nofile"
+    local lines = Util.get_lines({ path = item.filename, buf = item.buf })
+    if not lines then
+      return
+    end
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].modifiable = false
+    local ft = item:get_ft(buf)
+    if ft then
+      local lang = vim.treesitter.language.get_lang(ft)
+      if not pcall(vim.treesitter.start, buf, lang) then
+        vim.bo[buf].syntax = ft
       end
-      vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-      local ft = item:get_ft(buf)
-      if ft then
-        local lang = vim.treesitter.language.get_lang(ft)
-        if not pcall(vim.treesitter.start, buf, lang) then
-          vim.bo[buf].syntax = ft
-        end
-      end
-    else
-      item.buf = vim.fn.bufadd(item.filename)
-      buf = item.buf
+    end
+  else
+    item.buf = vim.fn.bufadd(item.filename)
+    buf = item.buf
 
-      if not vim.api.nvim_buf_is_loaded(item.buf) then
-        vim.fn.bufload(item.buf)
-      end
-      if not vim.bo[item.buf].buflisted then
-        vim.bo[item.buf].buflisted = true
-      end
+    if not vim.api.nvim_buf_is_loaded(item.buf) then
+      vim.fn.bufload(item.buf)
+    end
+    if not vim.bo[item.buf].buflisted then
+      vim.bo[item.buf].buflisted = true
     end
   end
 
