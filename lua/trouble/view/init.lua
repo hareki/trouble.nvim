@@ -165,6 +165,8 @@ function M:on_mount()
       local loc = this:at()
       if loc and loc.item then
         preview(this, loc.item)
+      else
+        Preview.close()
       end
     end
   end)
