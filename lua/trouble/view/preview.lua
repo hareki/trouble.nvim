@@ -32,7 +32,7 @@ end
 --- If the item has a loaded buffer, use that,
 --- otherwise create a new buffer.
 ---@param item trouble.Item
----@param opts? {scratch?:boolean}
+---@param opts? {scratch?:boolean, reuse_loaded_buf?:boolean}
 function M.create(item, opts)
   opts = opts or {}
 
@@ -43,7 +43,7 @@ function M.create(item, opts)
   end
 
   -- create a scratch preview buffer when needed
-  if not (buf and vim.api.nvim_buf_is_loaded(buf)) then
+  if not opts.reuse_loaded_buf or not (buf and vim.api.nvim_buf_is_loaded(buf)) then
     if opts.scratch then
       buf = vim.api.nvim_create_buf(false, true)
       vim.bo[buf].bufhidden = "wipe"
@@ -53,6 +53,7 @@ function M.create(item, opts)
         return
       end
       vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+      vim.bo[buf].modifiable = false
       local ft = item:get_ft(buf)
       if ft then
         local lang = vim.treesitter.language.get_lang(ft)
