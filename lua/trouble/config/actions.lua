@@ -44,9 +44,11 @@ local M = {
   -- Toggle the preview
   toggle_preview = function(self, ctx)
     self.opts.auto_preview = not self.opts.auto_preview
-    local enabled = self.opts.auto_preview and "enabled" or "disabled"
-    -- local notify = (enabled == "enabled") and Util.info or Util.warn
-    -- notify("Auto preview **" .. enabled .. "**", { id = "toggle_preview" })
+    if self.opts.preview.notify_on_toggle then
+      local enabled = self.opts.auto_preview and "enabled" or "disabled"
+      local notify = (enabled == "enabled") and Util.info or Util.warn
+      notify("Auto preview **" .. enabled .. "**", { id = "toggle_preview" })
+    end
     local Preview = require("trouble.view.preview")
     if self.opts.auto_preview then
       if ctx.item then

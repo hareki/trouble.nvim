@@ -165,7 +165,7 @@ function M:on_mount()
       local loc = this:at()
       if loc and loc.item then
         preview(this, loc.item)
-      else
+      elseif self.opts.preview.close_on_non_item then
         Preview.close()
       end
     end
@@ -304,7 +304,11 @@ function M:preview(item)
     return Util.warn("No item to preview")
   end
 
-  return Preview.open(self, item, { scratch = self.opts.preview.scratch })
+  return Preview.open(
+    self,
+    item,
+    { scratch = self.opts.preview.scratch, reuse_loaded_buf = self.opts.preview.reuse_loaded_buf }
+  )
 end
 
 function M:main()

@@ -34,10 +34,13 @@ local defaults = {
   ---@type trouble.Window.opts
   preview = {
     type = "main",
-    -- when a buffer is not yet loaded, the preview window will be created
+    -- when a buffer is not yet loaded or reuse_loaded_buf is false, the preview window will be created
     -- in a scratch buffer with only syntax highlighting enabled.
     -- Set to false, if you want the preview to always be a real loaded buffer.
     scratch = true,
+    reuse_loaded_buf = true, -- reuse the loaded buffer if it exists
+    notify_on_toggle = true, -- notify when the preview is toggled
+    close_on_non_item = false, -- close the preview when current cursor location is not an item
   },
   -- Throttle/Debounce settings. Should usually not be changed.
   ---@type table<string, number|{ms:number, debounce?:boolean}>
