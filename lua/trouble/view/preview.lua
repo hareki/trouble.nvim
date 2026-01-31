@@ -96,6 +96,10 @@ function M.open(view, item, opts)
 
     M.preview = M.preview_win(buf, view)
 
+    if not M.preview then
+      return
+    end
+
     M.preview.buf = buf
   end
   M.preview.item = item
@@ -157,6 +161,12 @@ function M.preview_win(buf, view)
   end
 
   view.preview_win:open()
+
+  -- Check if window actually opened
+  if not view.preview_win:valid() then
+    return nil
+  end
+
   Util.noautocmd(function()
     view.preview_win:set_buf(buf)
     view.preview_win:set_options("win")
