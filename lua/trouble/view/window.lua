@@ -174,10 +174,16 @@ function M:parent_size()
   if self.opts.relative == "editor" or self.opts.relative == "cursor" then
     return { width = vim.o.columns, height = vim.o.lines }
   end
+
+  if not self.opts.win or not vim.api.nvim_win_is_valid(self.opts.win) then
+    self.opts.win = 0
+  end
+
   local ret = {
     width = vim.api.nvim_win_get_width(self.opts.win),
     height = vim.api.nvim_win_get_height(self.opts.win),
   }
+
   -- account for winbar
   if vim.wo[self.opts.win].winbar ~= "" then
     ret.height = ret.height - 1
@@ -262,6 +268,12 @@ function M:open()
   if self:valid() then
     return self
   end
+
+  -- Don't reopen if relative to a window that's closed
+  if self.opts.relative == "win" and (not self.opts.win or not vim.api.nvim_win_is_valid(self.opts.win)) then
+    return self
+  end
+
   self:close()
   self:mount()
   return self
