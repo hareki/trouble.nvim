@@ -166,7 +166,9 @@ function M:on_mount()
       if loc and loc.item then
         preview(this, loc.item)
       elseif self.opts.preview.close_on_non_item then
-        Preview.close()
+        vim.schedule(function()
+          Preview.close()
+        end)
       end
     end
   end)
